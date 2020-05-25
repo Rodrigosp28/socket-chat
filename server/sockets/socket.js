@@ -24,14 +24,17 @@ io.on('connection', (client) => {
         // console.log(usuarios.getPersonas());
 
         client.broadcast.to(usuario.sala).emit('listaPersonas',usuarios.getPersonaPorSala(usuario.sala));
+        client.broadcast.to(usuario.sala).emit('crearMensaje', crearMensaje('administrador',`${usuario.nombre } ha entrado a la sala`));
         callback(usuarios.getPersonaPorSala(usuario.sala));
          
     });
 
-    client.on('crearMensaje', (data) => {
+    client.on('crearMensaje', (data,callback) => {
         let persona = usuarios.getPersona(client.id);
         let mensaje = crearMensaje(persona.nombre, data.mensaje);
         client.broadcast.to(persona.sala).emit('crearMensaje', mensaje);
+
+        callback(mensaje);
     })
 
     client.on('disconnect',()=> {
